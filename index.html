@@ -123,7 +123,7 @@
           }
 
           function onSplashActivate() {
-            if (confirm) { confirm.volume = 0.01; confirm.currentTime = 0; confirm.play().catch(function(){}); }
+            if (confirm) { confirm.volume = 0.05; confirm.currentTime = 0; confirm.play().catch(function(){}); }
             black.style.display = 'block';
             requestAnimationFrame(function () { black.style.opacity = '1'; splash.style.opacity = '0'; });
 
