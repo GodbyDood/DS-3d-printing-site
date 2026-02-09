@@ -1,0 +1,23 @@
+/* styles.css - Responsive SVG + hotspots */
+html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+.page{min-height:100vh;background:#f6f7f8;display:flex;align-items:flex-start;justify-content:center;padding:10px}
+.frame{width:100%;max-width:480px;background:#fff;border-radius:6px;padding:6px;box-shadow:0 4px 18px rgba(0,0,0,0.08)}
+
+/* Make the SVG responsive */
+svg{width:100%;height:auto;display:block}
+
+/* Hotspot styles */
+.hotspot{fill:rgba(255,0,0,0);stroke:none;cursor:pointer;transition:fill .12s,opacity .12s;opacity:0}
+.hotspot:hover{fill:rgba(255,0,0,0.12);opacity:1}
+.hotspot:active,.hotspot.active{fill:rgba(0,150,255,0.18);opacity:1}
+
+/* Developer helper: add .dev to show outlines for debugging */
+.hotspot.dev{stroke:#ff3b30;stroke-width:4;fill:rgba(255,60,60,0.08);opacity:1}
+
+/* Make the clickable area slightly larger for easier touch on mobile by adding an invisible stroke (optional)
+   If you want thicker touch areas, uncomment the stroke below and adjust stroke-width.
+.hotspot{stroke:rgba(0,0,0,0);stroke-width:20} */
+
+@media (min-width:520px){
+  .frame{max-width:520px}
+}

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Responsive Image with Scalable Hotspots</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Splash overlay shown on first load (displays health.png). Main page stays hidden until splash completes -->
+  <div id="splash" role="dialog" aria-label="Intro splash" tabindex="0"></div>
+  <div id="black-overlay" aria-hidden="true"></div>
+
+  <main class="page hidden-content">
+    <!--
+      Drop your screenshot image next to this file and name it `screenshot.png` (or change the href below).
+      The image is embedded inside the SVG so overlays (rect elements) scale automatically with it.
+
+      How it works:
+      - The <svg> uses a viewBox (0 0 1000 2000) as a coordinate space. Hotspot coordinates (x,y,width,height)
+        are expressed in that same coordinate space. When the SVG scales to the viewport, the rects scale
+        proportionally.
+      - Adjust viewBox or hotspot coordinates if you need more precise mapping for your exact image pixel size.
+    -->
+
+    <div class="frame">
+      <svg id="hotspot-svg" viewBox="0 0 1000 2000" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Screenshot with hotspots">
+        <!-- Replace screenshot.png with the actual filename of the attached image -->
+        <image href="screenshot.png" x="0" y="0" width="1000" height="2000" preserveAspectRatio="xMidYMid meet"></image>
+
+     <!-- Hotspots mapped to areas you requested. Coordinates use the SVG viewBox (0..1000 x 0..2000).
+       Adjust x/y/width/height if you need finer placement. Each rect has tabindex and aria-label for accessibility. -->
+     <!-- Bottom row -->
+  <!-- Bottom row resized to 160x160 while preserving centers -->
+  <!-- hot-wrench recentered: new center at (241,1820), width=160 -> x=241-80=161, y=1820-80=1740 -->
+  <rect class="hotspot dev" id="hot-wrench"    x="161"  y="1740" width="160" height="160" data-key="wrench" tabindex="0" aria-label="Wrench button"/>
+  <!-- hot-calendar recentered: new center at (410,1822), width=160 -> x=410-80=330, y=1822-80=1742 -->
+  <rect class="hotspot dev" id="hot-calendar"  x="330" y="1742" width="160" height="160" data-key="calendar" tabindex="0" aria-label="Calendar button"/>
+  <!-- hot-green recentered: new center at (581,1822), width=160 -> x=581-80=501, y=1822-80=1742 -->
+  <rect class="hotspot dev" id="hot-green"     x="501" y="1742" width="160" height="160" data-key="green" tabindex="0" aria-label="Green button"/>
+  <!-- hot-yellow recentered: new center at (758,1825), width=160 -> x=758-80=678, y=1825-80=1745 -->
+  <rect class="hotspot dev" id="hot-yellow"    x="678" y="1745" width="160" height="160" data-key="yellow" tabindex="0" aria-label="Yellow button"/>
+
+     <!-- Center row (PictoChat on left, DS Download/Play on right) -->
+  <!-- hot-pictochat adjusted to explicit corner coordinates: top-left (148,972) bottom-right (495,1127)
+    width = 495 - 148 = 347, height = 1127 - 972 = 155 -->
+  <rect class="hotspot dev" id="hot-pictochat"
+        x="162" y="1046" width="326" height="148"
+        data-key="pictochat" tabindex="0" aria-label="PictoChat button"
+        fill="rgba(255,0,160,0.06)" stroke="#ff0077" stroke-width="3"/>
+  <!-- hot-download resized to match PictoChat size (width=347 height=155) and keep center at (662,1052).
+    half-width=173.5 -> x=662-173.5=488.5 ; half-height=77.5 -> y=1052-77.5=974.5 -->
+  <!-- hot-download border set to span corners: top-left (510,1046) bottom-right (837,1200)
+     width = 837 - 510 = 327, height = 1200 - 1046 = 154 -->
+  <rect class="hotspot dev" id="hot-download"
+        x="510" y="1046" width="327" height="154"
+        data-key="download" tabindex="0" aria-label="DS Download/Play button"
+        fill="rgba(0,120,255,0.06)" stroke="#0077ff" stroke-width="3"/>
+
+     <!-- Center-ish small gray square button slightly below vertical center -->
+  <!-- hot-center-gray adjusted to exact corners provided: (463,1400) top-left to (537,1469) bottom-right
+    width = 537 - 463 = 74, height = 1469 - 1400 = 69 -->
+  <rect class="hotspot dev" id="hot-center-gray" x="463" y="1400" width="74" height="69" data-key="center-gray" tabindex="0" aria-label="Center gray button"/>
+
+        <!-- Optional: a semi-transparent dev overlay you can enable by adding .dev to the rects in the DOM or CSS -->
+      </svg>
+    </div>
+  </main>
+
+  <script>
+    // Simple click handler for hotspots. Replace with navigation or actions later.
+    document.querySelectorAll('.hotspot').forEach(function(el){
+      function activate(){
+        console.log('hotspot activated:', el.id, el.dataset.key);
+        el.classList.add('active');
+        setTimeout(function(){ el.classList.remove('active'); }, 220);
+      }
+
+      el.addEventListener('click', function(ev){ activate(); });
+
+      // keyboard accessibility: trigger on Enter or Space when focused
+      el.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
+          e.preventDefault();
+          activate();
+        }
+      });
+    });
+
+    // Helpful dev function: prints viewBox size to console, click anywhere to show SVG coordinates
+    (function(){
+      var svg = document.getElementById('hotspot-svg');
+      svg.addEventListener('click', function(e){
+        var pt = svg.createSVGPoint();
+        pt.x = e.clientX; pt.y = e.clientY;
+        var svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+        // Round for easier copy/paste when adjusting hotspots
+        console.log('svg coords:', Math.round(svgP.x), Math.round(svgP.y));
+      });
+    })();
+
+    // Runtime check: if the image resource doesn't load (missing/misnamed file),
+    // display a visible placeholder so you can still see the SVG area and hotspots.
+    (function(){
+      var imgHref = 'screenshot.png';
+      var testImg = new Image();
+      var svg = document.getElementById('hotspot-svg');
+      var svgImage = svg.querySelector('image');
+
+      testImg.onload = function(){
+        // image exists and loaded — nothing to do (the <image> element will render)
+        console.log('Screenshot image loaded:', imgHref);
+      };
+      testImg.onerror = function(){
+        console.warn('Screenshot image failed to load:', imgHref);
+        // hide the broken <image> (if it shows as broken icon) and add a placeholder
+        if(svgImage) svgImage.style.display = 'none';
+
+        // Add a light background rect and a centered text explaining what's missing
+        var placeholder = document.createElementNS('http://www.w3.org/2000/svg','rect');
+        placeholder.setAttribute('x','0');
+        placeholder.setAttribute('y','0');
+        placeholder.setAttribute('width',svg.getAttribute('viewBox').split(' ')[2]);
+        placeholder.setAttribute('height',svg.getAttribute('viewBox').split(' ')[3]);
+        placeholder.setAttribute('fill','#efefef');
+        placeholder.setAttribute('stroke','#ccc');
+        placeholder.setAttribute('stroke-width','4');
+        svg.insertBefore(placeholder, svg.firstChild);
+
+        var txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+        txt.setAttribute('x',svg.getAttribute('viewBox').split(' ')[2]/2);
+        txt.setAttribute('y',svg.getAttribute('viewBox').split(' ')[3]/2 - 20);
+        txt.setAttribute('text-anchor','middle');
+        txt.setAttribute('fill','#666');
+        txt.setAttribute('font-size','40');
+        txt.textContent = 'Missing image: ' + imgHref;
+        svg.appendChild(txt);
+
+        var hint = document.createElementNS('http://www.w3.org/2000/svg','text');
+        hint.setAttribute('x',svg.getAttribute('viewBox').split(' ')[2]/2);
+        hint.setAttribute('y',svg.getAttribute('viewBox').split(' ')[3]/2 + 30);
+        hint.setAttribute('text-anchor','middle');
+        hint.setAttribute('fill','#999');
+        hint.setAttribute('font-size','24');
+        hint.textContent = 'Place the image next to index.html or update the href in the file.';
+        svg.appendChild(hint);
+      };
+
+      // start the check (will trigger onload or onerror)
+      testImg.src = imgHref;
+    })();
+  </script>
+
+  <!-- Confirm audio + theme audio players -->
+  <audio id="confirm-audio" src="confirm.mp3" preload="auto" style="display:none"></audio>
+  <audio id="theme-audio" src="theme.mp3" loop preload="auto" style="display:none"></audio>
+
+  <script>
+    // Styles for splash and black overlay (kept in-page for simplicity)
+    (function(){
+      var css = '\n        #splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background-color:#000;background-image:url("health.png");background-repeat:no-repeat;background-position:center;background-size:contain;z-index:9999;cursor:pointer;transition:opacity .5s ease}\n        #black-overlay{position:fixed;inset:0;background:#000;z-index:10000;opacity:0;display:none;transition:opacity .5s ease}\n        .hidden-content{opacity:0;pointer-events:none;transition:opacity .5s ease}\n        main.page{opacity:1;transition:opacity .5s ease}\n      ';
+      var style = document.createElement('style');
+      style.appendChild(document.createTextNode(css));
+      document.head.appendChild(style);
+    })();
+
+    // Sequence: splash shown on load. On click inside splash: play confirm.mp3 at 0.01 volume, fade to black (0.5s),
+    // then fade to page (0.5s). After transitions start theme audio.
+    (function(){
+      var splash = document.getElementById('splash');
+      var black = document.getElementById('black-overlay');
+      var main = document.querySelector('main.page');
+      var confirm = document.getElementById('confirm-audio');
+      var theme = document.getElementById('theme-audio');
+
+      if(!splash || !black || !main) return;
+
+      // ensure splash is visible
+      splash.style.opacity = '1';
+
+      function startThemeAudio(){
+        if(!theme) return;
+        theme.volume = 0.01; // set to 50%
+        var p = theme.play();
+        if(p !== undefined){
+          p.then(function(){ console.log('theme.mp3 playing'); })
+           .catch(function(err){
+             console.warn('theme autoplay prevented; will start on user interaction', err);
+             function startOnInteraction(){ theme.play().catch(function(){/*ignore*/}); window.removeEventListener('pointerdown', startOnInteraction); window.removeEventListener('keydown', startOnInteraction); }
+             window.addEventListener('pointerdown', startOnInteraction, {once:true});
+             window.addEventListener('keydown', startOnInteraction, {once:true});
+           });
+        }
+      }
+
+      function onSplashActivate(){
+        // Play confirm at very low volume
+        if(confirm){ confirm.volume = 0.01; confirm.currentTime = 0; confirm.play().catch(function(){/*ignore*/}); }
+
+        // Fade to black
+        black.style.display = 'block';
+        // ensure repaint
+        requestAnimationFrame(function(){
+          black.style.opacity = '1';
+          splash.style.opacity = '0';
+        });
+
+        // after fade to black (0.5s), hide splash and fade black to reveal page
+        setTimeout(function(){
+          splash.style.display = 'none';
+          // reveal main content
+          main.classList.remove('hidden-content');
+          // small delay to ensure main starts transition
+          requestAnimationFrame(function(){
+            // Fade black out while main fades in
+            black.style.opacity = '0';
+          });
+
+          // after second fade completes, hide black and start theme audio
+          setTimeout(function(){ black.style.display = 'none'; startThemeAudio(); }, 500);
+        }, 500);
+      }
+
+      // Accept click or key to start
+      splash.addEventListener('click', onSplashActivate, {once:true});
+      splash.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); onSplashActivate(); } }, {once:true});
+    })();
+  </script>
+</body>
+</html>
