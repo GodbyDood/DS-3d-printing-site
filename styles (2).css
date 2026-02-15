@@ -1,0 +1,75 @@
+/* styles.css - Responsive SVG + hotspots (cleaned)
+   - Keeps layout minimal and readable
+   - Splash/overlay styles included here to avoid inline CSS
+*/
+html, body {
+  height: 100%;
+  margin: -3.4%;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: #f6f7f8;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px;
+}
+
+.frame {
+  width: 100%;
+  /* Shrink/shape the visible screen to the requested horizontal:vertical ratio 1170:2532.
+     max-width is reduced so the frame appears phone-sized on desktop; adjust if you prefer a different preview size. */
+  max-width: 390px;
+  aspect-ratio: 1170 / 2532;
+  background: #fff;
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  overflow: hidden; /* ensure svg doesn't overflow the rounded corners */
+}
+
+/* Make the SVG responsive */
+svg { width: 100%; height: 100%; display: block; }
+
+/* Hotspot styles: invisible but keyboard/touch accessible. Hover/active provide visual feedback. */
+.hotspot {
+  fill: rgba(255,0,0,0);
+  stroke: none;
+  cursor: pointer;
+  transition: fill .12s, opacity .12s;
+  opacity: 0;
+}
+.hotspot:hover { fill: rgba(255,0,0,0.12); opacity: 1; }
+.hotspot:active, .hotspot.active { fill: rgba(0,150,255,0.18); opacity: 1; }
+
+/* Splash and overlay styles (moved here from inline script for clarity) */
+#splash {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  background-image: url("health.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  z-index: 9999;
+  cursor: pointer;
+  transition: opacity .5s ease;
+}
+#black-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 10000;
+  opacity: 0;
+  display: none;
+  transition: opacity .5s ease;
+}
+.hidden-content { opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+main.page { opacity: 1; transition: opacity .5s ease; }
+
+@media (min-width: 520px) { .frame { max-width: 520px; } }
