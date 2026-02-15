@@ -1,0 +1,29 @@
+/* skin-pixel.css - pixel-perfect display using the original screenshot as the source
+   Hotspots are positioned in percentages so the layout scales responsively but preserves
+   pixel placement relative to the image. */
+:root{--img-w:1170;--img-h:2532}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Segoe UI,Roboto,Arial;background:#111;display:flex;align-items:center;justify-content:center}
+.viewer{width:390px; /* preview width; scales the image down to fit */
+  border-radius:10px;overflow:hidden;background:#000;padding:12px}
+.pixel-frame{position:relative;width:100%;height:auto}
+.pixel-frame img{display:block;width:100%;height:auto;image-rendering:pixelated}
+
+/* Overlay container positioned absolutely on top of the image, using percentage coordinates */
+.hotspot{position:absolute;background:transparent;border:2px solid rgba(0,0,0,0);outline:none}
+.hotspot:focus{border-color:rgba(11,120,255,0.9);box-shadow:0 0 0 4px rgba(11,120,255,0.25)}
+
+/* Hotspot positions (percentages = value / 1170 or 2532) */
+.hot-wrench{left:16.0684%; top:87.0312%; width:15.9829%; height:8.0159%}
+.hot-calendar{left:32.9060%; top:87.0110%; width:15.9829%; height:8.0159%}
+.hot-green{left:50.0855%; top:87.0110%; width:15.9829%; height:8.0159%}
+.hot-yellow{left:67.7778%; top:87.2695%; width:15.9829%; height:8.0159%}
+.hot-pictochat{left:16.2393%; top:52.2631%; width:32.5641%; height:7.3862%}
+.hot-download{left:51.0256%; top:52.2631%; width:32.7350%; height:7.7006%}
+.hot-center-gray{left:46.3248%; top:69.9842%; width:7.4359%; height:3.4358%}
+
+/* Make hotspots visually obvious during development (comment out to hide) */
+.hotspot.dev{background:rgba(255,0,0,0.12);border-color:rgba(255,0,0,0.2)}
+
+/* Responsive: increase preview size on larger screens */
+@media (min-width:900px){.viewer{width:780px}}
